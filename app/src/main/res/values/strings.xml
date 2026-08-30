@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AtendeAuto (diag)</string>
+    <string name="open_accessibility_settings">Abrir configurações de Acessibilidade</string>
+    <string name="accessibility_description">Registra a árvore de acessibilidade da tela de chamada para diagnóstico. Não interfere nas chamadas.</string>
+</resources>
