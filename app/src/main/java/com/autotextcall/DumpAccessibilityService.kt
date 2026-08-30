@@ -1,4 +1,4 @@
-package com.atendeauto
+package com.autotextcall
 
 import android.accessibilityservice.AccessibilityService
 import android.graphics.Rect
@@ -93,7 +93,7 @@ class DumpAccessibilityService : AccessibilityService() {
     }
 
     companion object {
-        const val TAG = "AtendeAuto"
+        const val TAG = "AutoTextCall"
         private const val MAX_DEPTH = 30
         private const val MIN_DUMP_INTERVAL_MS = 400L
     }

@@ -1,4 +1,4 @@
-package com.atendeauto
+package com.autotextcall
 
 import android.accessibilityservice.AccessibilityService
 import android.util.Log
@@ -7,7 +7,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 
 /**
  * Ao surgir a tela de chamada recebida do Samsung (com.samsung.android.incallui) com uma
- * chamada marcada como desconhecida pelo AtendeAutoScreeningService, aciona o Chamada por
+ * chamada marcada como desconhecida pelo AutoTextCallScreeningService, aciona o Chamada por
  * Texto em dois passos, replicando o que o usuário faz manualmente:
  *
  *  1. Toca no botão flutuante "Chamada por texto" (id ai_call_floating_button_container),
@@ -16,13 +16,13 @@ import android.view.accessibility.AccessibilityNodeInfo
  *     contentDescription "Chamada por texto, Toque duas vezes para atender." — que de
  *     fato atende a chamada em modo texto.
  */
-class AtendeAutoAccessibilityService : AccessibilityService() {
+class AutoTextCallAccessibilityService : AccessibilityService() {
 
     private var lastAttemptAt = 0L
     private var awaitingConfirmUntil = 0L
 
     override fun onServiceConnected() {
-        Log.i(TAG, "AtendeAutoAccessibilityService conectado")
+        Log.i(TAG, "AutoTextCallAccessibilityService conectado")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -122,7 +122,7 @@ class AtendeAutoAccessibilityService : AccessibilityService() {
     }
 
     companion object {
-        private const val TAG = "AtendeAuto"
+        private const val TAG = "AutoTextCall"
         private const val DIALER_PACKAGE_HINT = "incallui"
         private const val TEXT_CALL_FLOATING_BUTTON_ID =
             "com.samsung.android.incallui:id/ai_call_floating_button_container"

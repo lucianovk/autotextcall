@@ -1,15 +1,17 @@
-package com.atendeauto
+package com.autotextcall
 
 import android.Manifest
 import android.app.AlertDialog
 import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.Settings
-import android.widget.Button
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -19,13 +21,15 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var statusText: TextView
     private lateinit var overridesContainer: LinearLayout
-    private lateinit var root: LinearLayout
     private var pad = 0
+    private var padHalf = 0
 
     private val requestContacts = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -51,19 +55,59 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         pad = (16 * resources.displayMetrics.density).toInt()
-        root = LinearLayout(this).apply {
+        padHalf = pad / 2
+
+        val page = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
+            setBackgroundColor(color(R.color.surface_light))
             setPadding(pad, pad, pad, pad)
         }
 
-        root.addView(TextView(this).apply { textSize = 18f; text = getString(R.string.app_name) })
+        page.addView(header())
+        page.addView(spacer())
+        page.addView(setupCard())
+        page.addView(spacer())
+        page.addView(numbersCard())
 
-        root.addView(
-            LinearLayout(this).apply {
+        setContentView(
+            ScrollView(this).apply {
+                setBackgroundColor(color(R.color.surface_light))
+                addView(page)
+            },
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshStatus()
+    }
+
+    // --- Seções de UI -------------------------------------------------------------------
+
+    private fun header(): LinearLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        addView(
+            TextView(this@MainActivity).apply {
+                textSize = 22f
+                setTextColor(color(R.color.text_primary_light))
+                text = getString(R.string.app_name)
+            },
+        )
+    }
+
+    private fun setupCard(): MaterialCardView = card {
+        addView(sectionTitle(R.string.section_setup))
+
+        addView(
+            LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, padHalf, 0, padHalf)
                 addView(
                     TextView(this@MainActivity).apply {
                         text = getString(R.string.enable_switch_label)
+                        setTextColor(color(R.color.text_primary_light))
                         layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                     },
                 )
@@ -78,94 +122,115 @@ class MainActivity : AppCompatActivity() {
             },
         )
 
-        statusText = TextView(this).apply { textSize = 14f }
-        root.addView(statusText)
+        statusText = TextView(this@MainActivity).apply {
+            textSize = 14f
+            setTextColor(color(R.color.text_secondary_light))
+            setPadding(0, 0, 0, padHalf)
+        }
+        addView(statusText)
 
-        root.addView(
-            Button(this).apply {
-                text = getString(R.string.request_screening_role)
-                setOnClickListener { requestScreeningRoleAction() }
-            },
-        )
-        root.addView(
-            Button(this).apply {
-                text = getString(R.string.request_contacts_permission)
-                setOnClickListener { requestContacts.launch(Manifest.permission.READ_CONTACTS) }
-            },
-        )
-        root.addView(
-            Button(this).apply {
-                text = getString(R.string.open_accessibility_settings)
-                setOnClickListener { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
-            },
-        )
+        addView(outlinedButton(R.string.request_screening_role) { requestScreeningRoleAction() })
+        addView(outlinedButton(R.string.request_contacts_permission) { requestContacts.launch(Manifest.permission.READ_CONTACTS) })
+        addView(outlinedButton(R.string.open_accessibility_settings) { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) })
+    }
 
-        root.addView(
-            TextView(this).apply {
-                textSize = 16f
-                setPadding(0, pad, 0, 0)
-                text = getString(R.string.overrides_title)
-            },
-        )
+    private fun numbersCard(): MaterialCardView = card {
+        addView(sectionTitle(R.string.section_numbers))
 
-        val numberInput = EditText(this).apply { hint = getString(R.string.overrides_hint) }
-        root.addView(numberInput)
+        val numberInput = EditText(this@MainActivity).apply {
+            hint = getString(R.string.overrides_hint)
+            setPadding(padHalf, padHalf, padHalf, padHalf)
+        }
+        addView(numberInput)
 
-        root.addView(
-            LinearLayout(this).apply {
+        addView(
+            LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
-                addView(
-                    Button(this@MainActivity).apply {
-                        text = getString(R.string.mode_auto_answer)
-                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                        setOnClickListener { saveOverrideFromInput(numberInput, autoAnswer = true) }
-                    },
-                )
-                addView(
-                    Button(this@MainActivity).apply {
-                        text = getString(R.string.mode_never_answer)
-                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                        setOnClickListener { saveOverrideFromInput(numberInput, autoAnswer = false) }
-                    },
-                )
+                setPadding(0, padHalf, 0, 0)
+                weight(filledButton(R.string.mode_auto_answer) { saveOverrideFromInput(numberInput, autoAnswer = true) })
+                weight(filledButton(R.string.mode_never_answer) { saveOverrideFromInput(numberInput, autoAnswer = false) })
             },
         )
 
-        root.addView(
-            LinearLayout(this).apply {
+        addView(
+            LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
-                addView(
-                    Button(this@MainActivity).apply {
-                        text = getString(R.string.pick_from_contacts)
-                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                        setOnClickListener { pickFromContacts() }
-                    },
-                )
-                addView(
-                    Button(this@MainActivity).apply {
-                        text = getString(R.string.pick_from_recent_calls)
-                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                        setOnClickListener { onPickFromRecentCallsClicked() }
-                    },
-                )
+                setPadding(0, padHalf, 0, 0)
+                weight(outlinedButton(R.string.pick_from_contacts) { pickFromContacts() })
+                weight(outlinedButton(R.string.pick_from_recent_calls) { onPickFromRecentCallsClicked() })
             },
         )
 
-        overridesContainer = LinearLayout(this).apply {
+        overridesContainer = LinearLayout(this@MainActivity).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(0, pad, 0, 0)
         }
-        root.addView(overridesContainer)
-
-        setContentView(ScrollView(this).apply { addView(root) })
+        addView(overridesContainer)
     }
 
-    override fun onResume() {
-        super.onResume()
-        refreshStatus()
+    // --- Helpers visuais ------------------------------------------------------------
+
+    private fun card(build: LinearLayout.() -> Unit): MaterialCardView {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, pad, pad, pad)
+            build()
+        }
+        return MaterialCardView(this).apply {
+            radius = 20f
+            cardElevation = 3f
+            setCardBackgroundColor(color(R.color.surface_card_light))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            )
+            addView(content)
+        }
     }
 
-    // --- Papel de triagem / permissões -------------------------------------------------
+    private fun sectionTitle(resId: Int): TextView = TextView(this).apply {
+        textSize = 16f
+        setTextColor(color(R.color.brand_primary))
+        setPadding(0, 0, 0, padHalf)
+        text = getString(resId)
+    }
+
+    private fun outlinedButton(resId: Int, onClick: () -> Unit): MaterialButton =
+        MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+            text = getString(resId)
+            setOnClickListener { onClick() }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply { topMargin = padHalf / 2 }
+        }
+
+    private fun filledButton(resId: Int, onClick: () -> Unit): MaterialButton =
+        MaterialButton(this).apply {
+            text = getString(resId)
+            setBackgroundColor(color(R.color.brand_primary))
+            setTextColor(color(R.color.brand_on_primary))
+            setOnClickListener { onClick() }
+        }
+
+    private fun LinearLayout.weight(view: android.view.View) {
+        (view.layoutParams as? LinearLayout.LayoutParams)?.let {
+            it.width = 0
+            it.weight = 1f
+            it.marginEnd = padHalf / 2
+        } ?: run {
+            view.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        addView(view)
+    }
+
+    private fun spacer(): android.view.View = android.view.View(this).apply {
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, padHalf)
+    }
+
+    private fun color(resId: Int): Int = ContextCompat.getColor(this, resId)
+
+    // --- Papel de triagem / permissões ---------------------------------------------------
 
     private fun requestScreeningRoleAction() {
         val roleManager = getSystemService(RoleManager::class.java)
@@ -183,7 +248,7 @@ class MainActivity : AppCompatActivity() {
     private fun hasPermission(permission: String): Boolean =
         ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
-    // --- Importar da agenda / chamadas recentes -----------------------------------------
+    // --- Importar da agenda / chamadas recentes -------------------------------------------
 
     private fun pickFromContacts() {
         pickContact.launch(Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI))
@@ -232,20 +297,26 @@ class MainActivity : AppCompatActivity() {
         refreshStatus()
     }
 
-    // --- Lista de overrides ---------------------------------------------------------
+    // --- Lista de números cadastrados -----------------------------------------------------
 
     private fun refreshOverridesList() {
         overridesContainer.removeAllViews()
         val overrides = ContactLookup.getOverrides(this)
         if (overrides.isEmpty()) {
-            overridesContainer.addView(TextView(this).apply { text = getString(R.string.overrides_empty) })
+            overridesContainer.addView(
+                TextView(this).apply {
+                    text = getString(R.string.overrides_empty)
+                    setTextColor(color(R.color.text_secondary_light))
+                },
+            )
             return
         }
         overrides.forEach { override ->
             overridesContainer.addView(
                 LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
-                    setPadding(0, pad / 4, 0, pad / 4)
+                    gravity = Gravity.CENTER_VERTICAL
+                    setPadding(0, padHalf / 2, 0, padHalf / 2)
                     addView(
                         TextView(this@MainActivity).apply {
                             val modeLabel = if (override.autoAnswer) {
@@ -253,12 +324,13 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 getString(R.string.mode_never_answer)
                             }
+                            setTextColor(color(R.color.text_primary_light))
                             text = "${override.number}\n$modeLabel"
                             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                         },
                     )
                     addView(
-                        Button(this@MainActivity).apply {
+                        MaterialButton(this@MainActivity, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
                             text = getString(R.string.toggle_mode)
                             setOnClickListener {
                                 ContactLookup.setOverride(this@MainActivity, override.number, !override.autoAnswer)
@@ -267,8 +339,9 @@ class MainActivity : AppCompatActivity() {
                         },
                     )
                     addView(
-                        Button(this@MainActivity).apply {
+                        MaterialButton(this@MainActivity, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
                             text = getString(R.string.allowlist_remove)
+                            setTextColor(Color.parseColor("#D9483A"))
                             setOnClickListener {
                                 ContactLookup.removeOverride(this@MainActivity, override.number)
                                 refreshStatus()
@@ -280,7 +353,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // --- Status geral -----------------------------------------------------------------
+    // --- Status geral ---------------------------------------------------------------------
 
     private fun refreshStatus() {
         val hasContacts = hasPermission(Manifest.permission.READ_CONTACTS)

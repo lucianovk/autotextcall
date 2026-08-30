@@ -11,11 +11,11 @@ val keystoreProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.atendeauto"
+    namespace = "com.autotextcall"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.atendeauto"
+        applicationId = "com.autotextcall"
         minSdk = 29
         targetSdk = 35
         versionCode = 1
@@ -56,4 +56,5 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
 }

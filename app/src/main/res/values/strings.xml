@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AtendeAuto</string>
-    <string name="accessibility_description">Detecta o botão nativo \"Chamada por texto\" na tela de chamada recebida e o aciona para números desconhecidos.</string>
-    <string name="open_accessibility_settings">Abrir configurações de Acessibilidade</string>
-    <string name="enable_switch_label">Ativar AtendeAuto</string>
-    <string name="request_screening_role">Tornar-se app de Triagem de Chamadas</string>
-    <string name="request_contacts_permission">Permitir acesso aos Contatos</string>
-    <string name="overrides_title">Números cadastrados</string>
-    <string name="overrides_hint">Ex: 11999998888</string>
-    <string name="overrides_empty">(nenhum número cadastrado)</string>
-    <string name="mode_auto_answer">Atender por texto</string>
-    <string name="mode_never_answer">Não atender por texto</string>
-    <string name="toggle_mode">Alternar</string>
-    <string name="pick_from_contacts">Adicionar dos Contatos</string>
-    <string name="pick_from_recent_calls">Adicionar de Chamadas Recentes</string>
-    <string name="no_recent_calls">Nenhuma chamada recente encontrada (ou permissão negada).</string>
-    <string name="allowlist_remove">Remover</string>
-    <string name="role_unavailable">Este aparelho não suporta o papel de Triagem de Chamadas.</string>
-    <string name="status_contacts">Permissão de Contatos</string>
-    <string name="status_screening_role">App de Triagem de Chamadas</string>
-    <string name="status_accessibility">Serviço de Acessibilidade ativo</string>
+    <string name="app_name">Auto Text Call for Samsung</string>
+    <string name="accessibility_description">Detects Samsung\'s native "Text call" button on the incoming call screen and triggers it for unknown numbers.</string>
+    <string name="open_accessibility_settings">Open Accessibility settings</string>
+    <string name="enable_switch_label">Enable Auto Text Call</string>
+    <string name="request_screening_role">Become the Call Screening app</string>
+    <string name="request_contacts_permission">Allow Contacts access</string>
+    <string name="overrides_title">Registered numbers</string>
+    <string name="overrides_hint">e.g. 11999998888</string>
+    <string name="overrides_empty">(no numbers registered)</string>
+    <string name="mode_auto_answer">Answer with text call</string>
+    <string name="mode_never_answer">Never answer with text call</string>
+    <string name="toggle_mode">Toggle</string>
+    <string name="pick_from_contacts">Add from Contacts</string>
+    <string name="pick_from_recent_calls">Add from Recent Calls</string>
+    <string name="no_recent_calls">No recent calls found (or permission denied).</string>
+    <string name="allowlist_remove">Remove</string>
+    <string name="role_unavailable">This device does not support the Call Screening role.</string>
+    <string name="status_contacts">Contacts permission</string>
+    <string name="status_screening_role">Call Screening app</string>
+    <string name="status_accessibility">Accessibility service active</string>
+    <string name="section_setup">Setup</string>
+    <string name="section_numbers">Numbers</string>
 </resources>

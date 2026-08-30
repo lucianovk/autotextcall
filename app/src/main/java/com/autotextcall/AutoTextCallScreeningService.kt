@@ -1,4 +1,4 @@
-package com.atendeauto
+package com.autotextcall
 
 import android.telecom.Call
 import android.telecom.CallScreeningService
@@ -8,9 +8,9 @@ import android.util.Log
  * Detecta o número da chamada recebida (Android 10+, sem precisar de READ_PHONE_STATE /
  * READ_CALL_LOG) e, se for desconhecido, silencia o toque IMEDIATAMENTE (sem rejeitar a
  * chamada — a tela de chamada continua normal) e sinaliza para o
- * AtendeAutoAccessibilityService acionar o botão nativo "Chamada por texto" em seguida.
+ * AutoTextCallAccessibilityService acionar o botão nativo "Chamada por texto" em seguida.
  */
-class AtendeAutoScreeningService : CallScreeningService() {
+class AutoTextCallScreeningService : CallScreeningService() {
 
     override fun onScreenCall(callDetails: Call.Details) {
         if (!AppState.isEnabled(this)) {
@@ -33,6 +33,6 @@ class AtendeAutoScreeningService : CallScreeningService() {
     }
 
     companion object {
-        private const val TAG = "AtendeAuto"
+        private const val TAG = "AutoTextCall"
     }
 }

@@ -1,4 +1,4 @@
-package com.atendeauto
+package com.autotextcall
 
 import android.content.Context
 import androidx.core.content.edit
