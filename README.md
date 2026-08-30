@@ -1,8 +1,12 @@
 # Auto Text Call for Samsung
 
-Automatically answers calls from unknown numbers on Samsung phones by triggering the
-native **Text call** feature (Bixby Text Call) of One UI. Built and tested on a Galaxy
-A36 (One UI 7 / Android 15).
+A last line of defense against spam and robocalls that slip through Samsung's built-in
+call filtering. Instead of just blocking or silencing unknown numbers, it automatically
+answers them using the native **Text call** feature (Bixby Text Call) of One UI —
+forcing the caller into a text-only screening conversation instead of ever reaching you
+by voice. Legitimate unknown callers can still explain themselves in text; spam callers
+and robocalls typically can't or won't. Built and tested on a Galaxy A36
+(One UI 7 / Android 15).
 
 > ⚠ **Prerequisite**: this app does **not** implement text-call itself — it only
 > automates Samsung's own button. **"Text call" must already be available and enabled
