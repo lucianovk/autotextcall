@@ -22,4 +22,5 @@
     <string name="status_accessibility">Accessibility service active</string>
     <string name="section_setup">Setup</string>
     <string name="section_numbers">Numbers</string>
+    <string name="prerequisite_warning">⚠ Requires Samsung\'s native \"Text call\" feature to be enabled on this device (Phone app → ⋮ → Settings → Text call). This app only triggers that button automatically — it does not replace it.</string>
 </resources>

@@ -100,6 +100,15 @@ class MainActivity : AppCompatActivity() {
         addView(sectionTitle(R.string.section_setup))
 
         addView(
+            TextView(this@MainActivity).apply {
+                text = getString(R.string.prerequisite_warning)
+                textSize = 13f
+                setTextColor(color(R.color.text_secondary_light))
+                setPadding(0, 0, 0, padHalf)
+            },
+        )
+
+        addView(
             LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL

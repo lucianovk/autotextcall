@@ -22,4 +22,5 @@
     <string name="status_accessibility">Serviço de Acessibilidade ativo</string>
     <string name="section_setup">Configuração</string>
     <string name="section_numbers">Números</string>
+    <string name="prerequisite_warning">⚠ Exige que o recurso nativo \"Chamada por texto\" da Samsung esteja habilitado neste aparelho (App Telefone → ⋮ → Configurações → Chamada por texto). Este app só aciona esse botão automaticamente — ele não substitui o recurso nativo.</string>
 </resources>

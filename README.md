@@ -1,67 +1,95 @@
-# AtendeAuto
+# Auto Text Call for Samsung
 
-Atendimento automático de chamadas de números desconhecidos no Samsung Galaxy A36,
-acionando o recurso nativo **Chamada por Texto** (Bixby Text Call) do One UI.
+Automatically answers calls from unknown numbers on Samsung phones by triggering the
+native **Text call** feature (Bixby Text Call) of One UI. Built and tested on a Galaxy
+A36 (One UI 7 / Android 15).
 
-**Status: funcionando.** Testado no aparelho: chamada de número fora dos contatos é
-atendida sozinha em modo Chamada por Texto, com a saudação padrão do Samsung.
+> ⚠ **Prerequisite**: this app does **not** implement text-call itself — it only
+> automates Samsung's own button. **"Text call" must already be available and enabled
+> on your device** (Phone app → ⋮ → Settings → Text call). If your device doesn't have
+> this feature (it has historically been limited to Galaxy S/Z devices and specific
+> languages), this app has nothing to trigger and won't work.
 
-## Como funciona
+**Status: working.** Tested on-device: a call from a number outside Contacts is answered
+automatically in Text call mode, with Samsung's default greeting.
 
-Dois componentes independentes no mesmo APK:
+## How it works
 
-- **`AtendeAutoScreeningService`** (`CallScreeningService`, Android 10+) detecta o número
-  da chamada recebida — sem precisar de `READ_PHONE_STATE` nem `READ_CALL_LOG` — e checa
-  se está nos Contatos ou na allowlist do app. Se for desconhecido, apenas sinaliza a
-  intenção (nunca bloqueia/rejeita/silencia a chamada).
+Two independent components in the same APK:
 
-- **`AtendeAutoAccessibilityService`** observa a tela de chamada do Samsung
-  (`com.samsung.android.incallui`) e, se houver um número desconhecido sinalizado,
-  executa os dois toques necessários para atender em modo texto:
-  1. Botão flutuante "Chamada por texto" (`ai_call_floating_button_container`)
-  2. Confirmação de atendimento (identificada pela `contentDescription`, pois não tem id)
+- **`AutoTextCallScreeningService`** (`CallScreeningService`, Android 10+) detects the
+  incoming number — without needing `READ_PHONE_STATE` or `READ_CALL_LOG` — and checks it
+  against Contacts and the app's own number list. If unknown, it silences the ringtone
+  immediately and signals the intent (it never rejects or blocks the call).
 
-Esses IDs/descrições foram descobertos empiricamente neste aparelho com o
-`DumpAccessibilityService` (ver abaixo) e podem mudar em atualizações do One UI.
+- **`AutoTextCallAccessibilityService`** watches Samsung's call screen
+  (`com.samsung.android.incallui`) and, when a number was signaled as unknown, performs
+  the two taps needed to answer in text mode:
+  1. The floating "Text call" button (`ai_call_floating_button_container`)
+  2. The answer confirmation (identified by `contentDescription`, since it has no id)
+
+These ids/descriptions were discovered empirically on this device with
+`DumpAccessibilityService` (see below) and may change with One UI updates.
 
 ## Build
 
 ```bash
 source env.sh
-./gradlew assembleDebug
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleRelease
+adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
-Toolchain fora do repositório, em `~/Android`: SDK em `~/Android/Sdk`,
-JDK 17 (Temurin) em `~/Android/jdk`.
+Release builds are signed with a local keystore referenced by `keystore.properties`
+(gitignored, never committed). Toolchain lives outside the repo, under `~/Android`:
+SDK at `~/Android/Sdk`, JDK 17 (Temurin) at `~/Android/jdk`.
 
-## Configuração no aparelho (uma vez)
-
-Abra o app **AtendeAuto** e, na tela principal:
-
-1. **Abrir configurações de Acessibilidade** → ativar o serviço.
-   Se estiver esmaecido (Android 13+ bloqueia acessibilidade de APKs sideloaded):
-   `Informações do app → ⋮ → Permitir configurações restritas`.
-2. **Tornar-se app de Triagem de Chamadas** → conceder (substitui qualquer outro app de
-   triagem/antispam que você use, já que o papel é exclusivo).
-3. **Permitir acesso aos Contatos** → conceder.
-4. Adicionar números extras à allowlist, se quiser tratar como "conhecidos" sem estarem
-   salvos na agenda.
-
-## Depuração
+To generate your own signing key:
 
 ```bash
-adb logcat -s AtendeAuto
+keytool -genkeypair -v -keystore ~/Android/keystores/autotextcall.jks \
+  -alias autotextcall -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-Se uma atualização do One UI quebrar a automação (IDs/descrições mudam), reative
-temporariamente o `DumpAccessibilityService` no `AndroidManifest.xml` no lugar do
-`AtendeAutoAccessibilityService`, reinstale, e repita uma chamada de teste para
-redescobrir os identificadores atuais.
+and create `keystore.properties` at the repo root:
 
-## Limitações conhecidas
+```properties
+storeFile=/absolute/path/to/autotextcall.jks
+storePassword=...
+keyAlias=autotextcall
+keyPassword=...
+```
 
-- Papel de Triagem de Chamadas é exclusivo de um app por vez no aparelho.
-- Depende de IDs internos do One UI — pode quebrar em atualizações do sistema.
-- Requer permissão de Acessibilidade concedida manualmente (Android bloqueia concessão
-  automática para apps sideloaded).
+## On-device setup (one time)
+
+Open **Auto Text Call for Samsung** and, on the main screen:
+
+1. **Open Accessibility settings** → enable the service.
+   If greyed out (Android 13+ blocks accessibility for sideloaded APKs):
+   `App info → ⋮ → Allow restricted settings`.
+2. **Become the Call Screening app** → grant it (this replaces any other
+   screening/anti-spam app you use, since the role is exclusive).
+3. **Allow Contacts access** → grant it.
+4. Register extra numbers under "Numbers" — either "Answer with text call" (forces
+   auto text-call even for a saved contact) or "Never answer with text call" (forces
+   normal ringing even for an unknown number) — manually, from Contacts, or from Recent
+   Calls.
+
+## Debugging
+
+```bash
+adb logcat -s AutoTextCall
+```
+
+If a One UI update breaks the automation (ids/descriptions change), temporarily swap
+`AutoTextCallAccessibilityService` for `DumpAccessibilityService` in
+`AndroidManifest.xml`, reinstall, and repeat a test call to rediscover the current
+identifiers.
+
+## Known limitations
+
+- The Call Screening role is exclusive to one app at a time on the device.
+- Relies on internal One UI ids — may break on system updates.
+- Requires the Accessibility permission to be granted manually (Android blocks
+  automatic grants for sideloaded apps).
+- Native "Text call" availability/language support varies by device and region — see
+  the prerequisite above.
