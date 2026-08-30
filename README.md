@@ -17,6 +17,8 @@ and robocalls typically can't or won't. Built and tested on a Galaxy A36
 **Status: working.** Tested on-device: a call from a number outside Contacts is answered
 automatically in Text call mode, with Samsung's default greeting.
 
+<img src="screenshots/main_screen_en.png" width="280" alt="App main screen, English"> <img src="screenshots/main_screen_pt.png" width="280" alt="App main screen, Portuguese">
+
 ## How it works
 
 Two independent components in the same APK:
