@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AtendeAuto (diag)</string>
+    <string name="app_name">AtendeAuto</string>
+    <string name="accessibility_description">Detecta o botão nativo \"Chamada por texto\" na tela de chamada recebida e o aciona para números desconhecidos.</string>
     <string name="open_accessibility_settings">Abrir configurações de Acessibilidade</string>
-    <string name="accessibility_description">Registra a árvore de acessibilidade da tela de chamada para diagnóstico. Não interfere nas chamadas.</string>
+    <string name="enable_switch_label">Ativar AtendeAuto</string>
+    <string name="request_screening_role">Tornar-se app de Triagem de Chamadas</string>
+    <string name="request_contacts_permission">Permitir acesso aos Contatos</string>
+    <string name="allowlist_title">Números sempre permitidos (não são \"desconhecidos\")</string>
+    <string name="allowlist_hint">Ex: 11999998888</string>
+    <string name="allowlist_add">Adicionar</string>
+    <string name="allowlist_remove">Remover</string>
+    <string name="allowlist_empty">(nenhum número na lista)</string>
+    <string name="role_unavailable">Este aparelho não suporta o papel de Triagem de Chamadas.</string>
+    <string name="status_contacts">Permissão de Contatos</string>
+    <string name="status_screening_role">App de Triagem de Chamadas</string>
+    <string name="status_accessibility">Serviço de Acessibilidade ativo</string>
 </resources>
