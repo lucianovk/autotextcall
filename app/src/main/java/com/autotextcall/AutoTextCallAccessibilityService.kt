@@ -57,20 +57,28 @@ class AutoTextCallAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        if (event == null) return
+        val pkg = event?.packageName?.toString() ?: return
+        if (!isDialerRelatedPackage(pkg)) return
         if (!AppState.isEnabled(this)) return
 
         val now = System.currentTimeMillis()
         val relevant = now < awaitingConfirmUntil || AppState.hasPendingUnknownCall(this)
         if (!relevant) return
 
-        // Não filtramos mais por nome de pacote: aparelhos diferentes usam nomes de pacote
-        // distintos para a tela de chamada/lockscreen (nem sempre contém "incallui" ou
-        // "dialer"), e isso deixava o serviço inteiramente mudo — nenhuma tentativa, nenhum
-        // diagnóstico gravado. Como só há polling enquanto uma chamada está pendente/aguardando
-        // confirmação, reagir a qualquer evento nesse período é seguro e muito mais robusto.
+        // Em vez de só reagir a este evento, dispara/renova um polling ativo curto: a
+        // cadência dos eventos de acessibilidade varia com a animação da UI do sistema, o que
+        // deixava o fluxo perceptivelmente lento (até ~1s entre tentativas).
         startPolling()
     }
+
+    /** Cobre variações comuns de discador/telefonia/systemui entre fabricantes/versões. */
+    private fun isDialerRelatedPackage(pkg: String): Boolean =
+        pkg.contains("incallui", ignoreCase = true) ||
+            pkg.contains("dialer", ignoreCase = true) ||
+            pkg.contains("telecom", ignoreCase = true) ||
+            pkg.contains("phone", ignoreCase = true) ||
+            pkg.contains("systemui", ignoreCase = true) ||
+            pkg.contains("bixby", ignoreCase = true)
 
     private fun startPolling() {
         val now = System.currentTimeMillis()
