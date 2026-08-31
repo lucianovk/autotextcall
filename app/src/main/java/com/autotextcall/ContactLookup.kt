@@ -3,6 +3,7 @@ package com.autotextcall
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
+import android.telephony.PhoneNumberUtils
 import androidx.core.content.edit
 
 /**
@@ -37,19 +38,25 @@ object ContactLookup {
         val trimmed = number.trim()
         if (trimmed.isEmpty()) return
         val current = prefs(context).getStringSet(KEY_OVERRIDES, emptySet()).orEmpty().toMutableSet()
-        current.removeAll { decode(it)?.let { o -> normalize(o.number) == normalize(trimmed) } == true }
+        current.removeAll { decode(it)?.let { o -> numbersMatch(o.number, trimmed) } == true }
         current.add(encode(trimmed, autoAnswer))
         prefs(context).edit { putStringSet(KEY_OVERRIDES, current) }
     }
 
     fun removeOverride(context: Context, number: String) {
         val current = prefs(context).getStringSet(KEY_OVERRIDES, emptySet()).orEmpty().toMutableSet()
-        current.removeAll { decode(it)?.let { o -> normalize(o.number) == normalize(number) } == true }
+        current.removeAll { decode(it)?.let { o -> numbersMatch(o.number, number) } == true }
         prefs(context).edit { putStringSet(KEY_OVERRIDES, current) }
     }
 
     private fun findOverride(context: Context, number: String): Override? =
-        getOverrides(context).firstOrNull { normalize(it.number) == normalize(number) }
+        getOverrides(context).firstOrNull { numbersMatch(it.number, number) }
+
+    /**
+     * Compara números tolerando diferenças de formatação (código de país, prefixo de tronco
+     * "0", DDD com/sem espaços) — ex.: "+5519999910319" e "019999910319" são o mesmo número.
+     */
+    private fun numbersMatch(a: String, b: String): Boolean = PhoneNumberUtils.compare(a, b)
 
     private fun encode(number: String, autoAnswer: Boolean): String =
         "$number$SEPARATOR${if (autoAnswer) "1" else "0"}"
@@ -77,8 +84,6 @@ object ContactLookup {
             false
         }
     }
-
-    private fun normalize(number: String): String = number.filter { it.isDigit() }
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
