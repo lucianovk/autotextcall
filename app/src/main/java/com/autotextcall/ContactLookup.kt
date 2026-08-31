@@ -26,6 +26,7 @@ object ContactLookup {
     fun isKnown(context: Context, number: String): Boolean {
         val override = findOverride(context, number)
         if (override != null) return !override.autoAnswer
+        if (AppState.isAnswerAllCalls(context)) return false
         return isInContacts(context, number)
     }
 

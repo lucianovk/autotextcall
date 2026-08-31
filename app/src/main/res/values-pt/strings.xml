@@ -5,6 +5,8 @@
     <string name="open_accessibility_settings">Abrir configurações de Acessibilidade</string>
     <string name="share_diagnostic">Compartilhar diagnóstico da chamada</string>
     <string name="enable_switch_label">Ativar o Auto Text Call</string>
+    <string name="answer_all_switch_label">Atender TODAS as chamadas por texto</string>
+    <string name="answer_all_hint">Vale também para contatos salvos, não só números desconhecidos. Números marcados como "Não atender por texto" continuam sendo respeitados.</string>
     <string name="request_screening_role">Tornar-se app de Triagem de Chamadas</string>
     <string name="request_contacts_permission">Permitir acesso aos Contatos</string>
     <string name="overrides_title">Números cadastrados</string>

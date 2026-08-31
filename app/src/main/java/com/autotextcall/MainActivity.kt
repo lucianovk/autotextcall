@@ -116,25 +116,23 @@ class MainActivity : AppCompatActivity() {
         )
 
         addView(
-            LinearLayout(this@MainActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, padHalf, 0, padHalf)
-                addView(
-                    TextView(this@MainActivity).apply {
-                        text = getString(R.string.enable_switch_label)
-                        setTextColor(color(R.color.text_primary_light))
-                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                    },
-                )
-                addView(
-                    Switch(this@MainActivity).apply {
-                        isChecked = AppState.isEnabled(this@MainActivity)
-                        setOnCheckedChangeListener { _: CompoundButton, checked: Boolean ->
-                            AppState.setEnabled(this@MainActivity, checked)
-                        }
-                    },
-                )
+            switchRow(R.string.enable_switch_label, AppState.isEnabled(this@MainActivity)) { checked ->
+                AppState.setEnabled(this@MainActivity, checked)
+            },
+        )
+
+        addView(
+            switchRow(R.string.answer_all_switch_label, AppState.isAnswerAllCalls(this@MainActivity)) { checked ->
+                AppState.setAnswerAllCalls(this@MainActivity, checked)
+            },
+        )
+
+        addView(
+            TextView(this@MainActivity).apply {
+                text = getString(R.string.answer_all_hint)
+                textSize = 12f
+                setTextColor(color(R.color.text_secondary_light))
+                setPadding(0, 0, 0, padHalf)
             },
         )
 
@@ -213,6 +211,26 @@ class MainActivity : AppCompatActivity() {
         setPadding(0, 0, 0, padHalf)
         text = getString(resId)
     }
+
+    private fun switchRow(labelResId: Int, initialChecked: Boolean, onChanged: (Boolean) -> Unit): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, padHalf / 2, 0, padHalf / 2)
+            addView(
+                TextView(this@MainActivity).apply {
+                    text = getString(labelResId)
+                    setTextColor(color(R.color.text_primary_light))
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                },
+            )
+            addView(
+                Switch(this@MainActivity).apply {
+                    isChecked = initialChecked
+                    setOnCheckedChangeListener { _: CompoundButton, checked: Boolean -> onChanged(checked) }
+                },
+            )
+        }
 
     private fun outlinedButton(resId: Int, onClick: () -> Unit): MaterialButton =
         MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {

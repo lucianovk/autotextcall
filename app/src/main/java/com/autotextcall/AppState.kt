@@ -13,6 +13,7 @@ object AppState {
 
     private const val PREFS = "atendeauto_prefs"
     private const val KEY_ENABLED = "enabled"
+    private const val KEY_ANSWER_ALL = "answer_all"
     private const val KEY_PENDING_NUMBER = "pending_number"
     private const val KEY_PENDING_AT = "pending_at"
 
@@ -26,6 +27,14 @@ object AppState {
 
     fun setEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit { putBoolean(KEY_ENABLED, enabled) }
+    }
+
+    /** Se true, toda chamada é atendida por texto — mesmo de contatos salvos —, exceto
+     *  números explicitamente cadastrados como "Não atender por texto". */
+    fun isAnswerAllCalls(context: Context): Boolean = prefs(context).getBoolean(KEY_ANSWER_ALL, false)
+
+    fun setAnswerAllCalls(context: Context, answerAll: Boolean) {
+        prefs(context).edit { putBoolean(KEY_ANSWER_ALL, answerAll) }
     }
 
     fun markUnknownCallPending(context: Context, number: String) {

@@ -5,6 +5,8 @@
     <string name="open_accessibility_settings">Open Accessibility settings</string>
     <string name="share_diagnostic">Share call diagnostic</string>
     <string name="enable_switch_label">Enable Auto Text Call</string>
+    <string name="answer_all_switch_label">Answer ALL calls by text</string>
+    <string name="answer_all_hint">Also applies to saved contacts, not just unknown numbers. Numbers set to "Never answer by text" are still respected.</string>
     <string name="request_screening_role">Become the Call Screening app</string>
     <string name="request_contacts_permission">Allow Contacts access</string>
     <string name="overrides_title">Registered numbers</string>
