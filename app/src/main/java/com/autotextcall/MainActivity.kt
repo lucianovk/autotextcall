@@ -86,13 +86,19 @@ class MainActivity : AppCompatActivity() {
     // --- Seções de UI -------------------------------------------------------------------
 
     private fun header(): LinearLayout = LinearLayout(this).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
+        orientation = LinearLayout.VERTICAL
         addView(
             TextView(this@MainActivity).apply {
                 textSize = 22f
                 setTextColor(color(R.color.text_primary_light))
                 text = getString(R.string.app_name)
+            },
+        )
+        addView(
+            TextView(this@MainActivity).apply {
+                textSize = 12f
+                setTextColor(color(R.color.text_secondary_light))
+                text = "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
             },
         )
     }

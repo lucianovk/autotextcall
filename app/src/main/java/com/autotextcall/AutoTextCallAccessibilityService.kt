@@ -46,6 +46,19 @@ class AutoTextCallAccessibilityService : AccessibilityService() {
         }
     }
 
+    /**
+     * Antes o filtro exigia "incallui" no pacote — mas isso deixa o serviço inteiramente mudo
+     * (nenhuma tentativa, nenhum diagnóstico) em aparelhos onde a tela de chamada usa outro
+     * nome de pacote. Ampliado para cobrir variações comuns de discador/telefonia/systemui.
+     */
+    private fun isDialerRelatedPackage(pkg: String): Boolean =
+        pkg.contains("incallui", ignoreCase = true) ||
+            pkg.contains("dialer", ignoreCase = true) ||
+            pkg.contains("telecom", ignoreCase = true) ||
+            pkg.contains("phone", ignoreCase = true) ||
+            pkg.contains("systemui", ignoreCase = true) ||
+            pkg.contains("bixby", ignoreCase = true)
+
     private fun dumpDiagnostics() {
         val snapshot = windows.orEmpty().map { it.root?.packageName?.toString() to it.root }
         DiagnosticDump.write(this, snapshot)
@@ -58,7 +71,7 @@ class AutoTextCallAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         val pkg = event?.packageName?.toString() ?: return
-        if (!pkg.contains(DIALER_PACKAGE_HINT, ignoreCase = true)) return
+        if (!isDialerRelatedPackage(pkg)) return
         if (!AppState.isEnabled(this)) return
 
         // Em vez de só reagir a este evento, dispara/renova um polling ativo curto: a
@@ -216,7 +229,6 @@ class AutoTextCallAccessibilityService : AccessibilityService() {
 
     companion object {
         private const val TAG = "AutoTextCall"
-        private const val DIALER_PACKAGE_HINT = "incallui"
         private const val TEXT_CALL_FLOATING_BUTTON_ID =
             "com.samsung.android.incallui:id/ai_call_floating_button_container"
         private const val HEADS_UP_CARD_ID =
@@ -229,6 +241,6 @@ class AutoTextCallAccessibilityService : AccessibilityService() {
         private const val POLL_INTERVAL_MS = 120L
         // Cada evento de acessibilidade renova esta janela; ela só se esgota se a UI do
         // discador parar de emitir eventos (ex.: usuário atendeu/recusou manualmente).
-        private const val POLL_WINDOW_MS = 1_000L
+        private const val POLL_WINDOW_MS = 3_000L
     }
 }
