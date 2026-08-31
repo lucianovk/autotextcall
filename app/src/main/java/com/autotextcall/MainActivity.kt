@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var statusText: TextView
     private lateinit var overridesContainer: LinearLayout
+    private lateinit var shareDiagnosticButton: MaterialButton
     private var pad = 0
     private var padHalf = 0
 
@@ -141,6 +142,9 @@ class MainActivity : AppCompatActivity() {
         addView(outlinedButton(R.string.request_screening_role) { requestScreeningRoleAction() })
         addView(outlinedButton(R.string.request_contacts_permission) { requestContacts.launch(Manifest.permission.READ_CONTACTS) })
         addView(outlinedButton(R.string.open_accessibility_settings) { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) })
+
+        shareDiagnosticButton = outlinedButton(R.string.share_diagnostic) { DiagnosticDump.share(this@MainActivity) }
+        addView(shareDiagnosticButton)
     }
 
     private fun numbersCard(): MaterialCardView = card {
@@ -378,6 +382,9 @@ class MainActivity : AppCompatActivity() {
             appendLine(status(getString(R.string.status_screening_role), hasScreeningRole))
             append(status(getString(R.string.status_accessibility), accessibilityOn))
         }
+
+        shareDiagnosticButton.isEnabled = DiagnosticDump.hasDump(this)
+        shareDiagnosticButton.visibility = if (DiagnosticDump.hasDump(this)) android.view.View.VISIBLE else android.view.View.GONE
 
         refreshOverridesList()
     }

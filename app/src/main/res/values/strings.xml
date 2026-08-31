@@ -3,6 +3,7 @@
     <string name="app_name">Auto Text Call for Samsung</string>
     <string name="accessibility_description">Detects Samsung\'s native "Text call" button on the incoming call screen and triggers it for unknown numbers.</string>
     <string name="open_accessibility_settings">Open Accessibility settings</string>
+    <string name="share_diagnostic">Share call diagnostic</string>
     <string name="enable_switch_label">Enable Auto Text Call</string>
     <string name="request_screening_role">Become the Call Screening app</string>
     <string name="request_contacts_permission">Allow Contacts access</string>

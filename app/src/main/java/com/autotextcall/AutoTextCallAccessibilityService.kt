@@ -32,10 +32,24 @@ class AutoTextCallAccessibilityService : AccessibilityService() {
 
     private val pollRunnable = object : Runnable {
         override fun run() {
-            if (System.currentTimeMillis() > pollingUntil) return
+            if (System.currentTimeMillis() > pollingUntil) {
+                // Encerrou sem sucesso: se ainda há uma chamada desconhecida pendente, o
+                // botão "Chamada por texto" (ou a bolha heads-up) não foi encontrado neste
+                // aparelho — grava o diagnóstico para o usuário poder compartilhar.
+                if (AppState.hasPendingUnknownCall(this@AutoTextCallAccessibilityService)) {
+                    dumpDiagnostics()
+                }
+                return
+            }
             if (attemptStep()) return
             handler.postDelayed(this, POLL_INTERVAL_MS)
         }
+    }
+
+    private fun dumpDiagnostics() {
+        val snapshot = windows.orEmpty().map { it.root?.packageName?.toString() to it.root }
+        DiagnosticDump.write(this, snapshot)
+        Log.i(TAG, "Diagnóstico gravado (botão não encontrado neste aparelho)")
     }
 
     override fun onServiceConnected() {
