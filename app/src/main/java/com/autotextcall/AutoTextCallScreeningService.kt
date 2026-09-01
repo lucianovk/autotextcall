@@ -19,20 +19,25 @@ class AutoTextCallScreeningService : CallScreeningService() {
         }
 
         val number = callDetails.handle?.schemeSpecificPart
-        if (number.isNullOrBlank() || ContactLookup.isKnown(this, number)) {
-            Log.i(TAG, "Número conhecido ou vazio, nada a fazer: $number")
+        // Número privado/bloqueado (presentation restrito) não tem schemeSpecificPart — sem
+        // número não há como checar Contatos/overrides, então tratamos direto como
+        // desconhecido em vez de deixar a chamada tocar normalmente sem nenhuma ação.
+        val isPrivateNumber = number.isNullOrBlank()
+        if (!isPrivateNumber && ContactLookup.isKnown(this, number!!)) {
+            Log.i(TAG, "Número conhecido, nada a fazer: $number")
             respondToCall(callDetails, CallResponse.Builder().build())
             return
         }
 
-        Log.i(TAG, "Número desconhecido, silenciando toque e sinalizando: $number")
+        Log.i(TAG, if (isPrivateNumber) "Número privado, tratando como desconhecido" else "Número desconhecido, silenciando toque e sinalizando: $number")
         // Silencia o toque na hora; a chamada segue tocando "muda" até o serviço de
         // acessibilidade atender em modo texto alguns instantes depois.
         respondToCall(callDetails, CallResponse.Builder().setSilenceCall(true).build())
-        AppState.markUnknownCallPending(this, number)
+        AppState.markUnknownCallPending(this, number ?: PRIVATE_NUMBER_LABEL)
     }
 
     companion object {
         private const val TAG = "AutoTextCall"
+        private const val PRIVATE_NUMBER_LABEL = "(privado)"
     }
 }
